@@ -10,7 +10,7 @@ public class KernelPlugin(Kernel kernel) : IChat
         [
             kernel.CreateFunctionFromMethod(() => $"{DateTime.UtcNow:r}",
                 "Now",
-                "Gets the date and time")
+                "Gets the current date and time")
         ]);
 
         var kernelFunction = kernel.CreateFunctionFromPrompt("""
