@@ -9,8 +9,8 @@ public class KernelPlugin(Kernel kernel) : IChat
         kernel.ImportPluginFromFunctions("DateTimeHelpers",
         [
             kernel.CreateFunctionFromMethod(() => $"{DateTime.UtcNow:r}",
-                "Now",
-                "Gets the current date and time")
+                functionName: "Now",
+                description: "Gets the current date and time")
         ]);
 
         var kernelFunction = kernel.CreateFunctionFromPrompt("""

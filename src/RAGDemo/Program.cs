@@ -12,9 +12,9 @@ internal class Program
             .Build();
 
         var kernel = Kernel.CreateBuilder()
-            .AddAzureOpenAIChatCompletion("gpt-35-turbo",
-                configuration["AzureOpenAI:Endpoint"]!,
-                configuration["AzureOpenAI:ApiKey"]!)
+            .AddAzureOpenAIChatCompletion(deploymentName: "gpt-35-turbo",
+                endpoint: configuration["AzureOpenAI:Endpoint"]!,
+                apiKey: configuration["AzureOpenAI:ApiKey"]!)
             .Build();
 
         var chat = new BasicChat(kernel);

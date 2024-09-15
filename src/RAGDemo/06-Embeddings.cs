@@ -5,24 +5,25 @@ using System.Text.RegularExpressions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
-using Microsoft.SemanticKernel.Connectors.OpenAI;
+using Microsoft.SemanticKernel.Connectors.AzureOpenAI;
 using Microsoft.SemanticKernel.Connectors.Qdrant;
 using Microsoft.SemanticKernel.Memory;
 using Microsoft.SemanticKernel.Text;
 
 namespace RagDemo;
 
-public class Embeddings(Kernel kernel, IConfiguration configuration) : IChat
+public partial class Embeddings(Kernel kernel, IConfiguration configuration) : IChat
 {
     [Experimental("SKEXP0001")]
     public async Task InitChat()
     {
-        var semanticTextMemory = new MemoryBuilder()
-            .WithMemoryStore(new QdrantMemoryStore("http://localhost:6333/", 1536))
-            .WithAzureOpenAITextEmbeddingGeneration("text-embedding-ada-002",
-                configuration["AzureOpenAI:Endpoint"]!,
-                configuration["AzureOpenAI:ApiKey"]!)
-            .Build();
+        var textEmbeddingService = new AzureOpenAITextEmbeddingGenerationService(
+            deploymentName: "text-embedding-ada-002",
+            endpoint: configuration["AzureOpenAI:Endpoint"]!,
+            apiKey: configuration["AzureOpenAI:ApiKey"]!);
+
+        var semanticTextMemory = new SemanticTextMemory(new QdrantMemoryStore("http://localhost:6333/", 1536),
+            textEmbeddingService);
 
         var collections = await semanticTextMemory.GetCollectionsAsync();
         const string collectionName = "dotnetsupportdates";
@@ -39,10 +40,10 @@ public class Embeddings(Kernel kernel, IConfiguration configuration) : IChat
 
             var paragraphs =
                 TextChunker.SplitPlainTextParagraphs(
-                    TextChunker.SplitPlainTextLines(
-                        WebUtility.HtmlDecode(Regex.Replace(str, @"<[^>]+>|&nbsp;", string.Empty)),
-                        128),
-                    1024);
+                    lines: TextChunker.SplitPlainTextLines(
+                        text: WebUtility.HtmlDecode(MyRegex().Replace(input: str, replacement: string.Empty)),
+                        maxTokensPerLine: 128),
+                    maxTokensPerParagraph: 1024);
 
             for (var i = 0; i < paragraphs.Count; i++)
                 await semanticTextMemory.SaveInformationAsync(collectionName, paragraphs[i], $"paragraph{i}");
@@ -88,4 +89,7 @@ public class Embeddings(Kernel kernel, IConfiguration configuration) : IChat
         }
         // ReSharper disable once FunctionNeverReturns
     }
+
+    [GeneratedRegex(pattern: @"<[^>]+>|&nbsp;")]
+    private static partial Regex MyRegex();
 }

@@ -6,7 +6,7 @@ using Microsoft.SemanticKernel.ChatCompletion;
 
 namespace RagDemo;
 
-public class BasicRag(Kernel kernel) : IChat
+public partial class BasicRag(Kernel kernel) : IChat
 {
     public async Task InitChat()
     {
@@ -19,9 +19,8 @@ public class BasicRag(Kernel kernel) : IChat
             var str = await client.GetStringAsync(
                 "https://learn.microsoft.com/en-us/lifecycle/products/microsoft-net-and-net-core");
 
-            str = WebUtility.HtmlDecode(Regex.Replace(str,
-                @"<[^>]+>|&nbsp;",
-                string.Empty));
+            str = WebUtility.HtmlDecode(MyRegex().Replace(input: str,
+                replacement: string.Empty));
 
             chatHistory.AddUserMessage("Here's some additional information: " + str);
         }
@@ -45,4 +44,7 @@ public class BasicRag(Kernel kernel) : IChat
         }
         // ReSharper disable once FunctionNeverReturns
     }
+
+    [GeneratedRegex(pattern: @"<[^>]+>|&nbsp;")]
+    private static partial Regex MyRegex();
 }
