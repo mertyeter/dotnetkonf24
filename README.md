@@ -1,6 +1,6 @@
-# RagDemo
+# Implementing Retrieval Augmented Generation (RAG) in .NET
 
-This repository contains an implementation of the [`Demystifying Retrieval Augmented Generation with .NET`](https://devblogs.microsoft.com/dotnet/demystifying-retrieval-augmented-generation-with-dotnet/). Each C# file represents a specific component or module of the project. 
+This repository contains the source code and presentation materials for my session titled "Implementing Retrieval Augmented Generation (RAG) in .NET" at Devnot Dotnet Konf 2024, held on May 25th, 2024. The source code is an implementation of the article [`Demystifying Retrieval Augmented Generation with .NET`](https://devblogs.microsoft.com/dotnet/demystifying-retrieval-augmented-generation-with-dotnet/). Each C# file represents a specific component or module of the project.
 
 ### Prerequisites
 
